@@ -1,0 +1,25 @@
+# Robots.txt for Sewa Institute Ghana
+# https://www.sewainstitute.edu.gh
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.sewainstitute.edu.gh/sitemap.xml
+
+# Disallow admin/api paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+
+# Allow important pages
+Allow: /formations
+Allow: /contact
+Allow: /inscription
+Allow: /galerie
+Allow: /hebergement
+Allow: /a-propos
+Allow: /formation-en-ligne
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1

@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.vscode
+*.log
+dist
+build
+coverage
+.env*
+public/sw.js
+public/workbox-*
+pnpm-lock.yaml

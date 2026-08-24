@@ -1,0 +1,111 @@
+name: 🚀 Deploy to LWS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '9'
+
+      - name: 📥 Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔨 Build Application
+        run: pnpm build
+
+      - name: 📦 Prepare LWS Deployment Package
+        run: |
+          echo "📦 Creating LWS deployment package..."
+          mkdir -p deploy
+
+          # Find and copy standalone app
+          if [ -d ".next/standalone" ]; then
+            STANDALONE_PATH=$(find .next/standalone -name "server.js" -type f | head -1)
+            if [ -n "$STANDALONE_PATH" ]; then
+              STANDALONE_DIR=$(dirname "$STANDALONE_PATH")
+              echo "✅ Found standalone app in: $STANDALONE_DIR"
+              cp -r "$STANDALONE_DIR"/* deploy/
+            else
+              echo "⚠️ Standalone server.js not found, copying all standalone content..."
+              cp -r .next/standalone/* deploy/ 2>/dev/null || true
+            fi
+          fi
+
+          # Copy static assets
+          mkdir -p deploy/.next
+          if [ -d ".next/static" ]; then
+            cp -r .next/static deploy/.next/
+            echo "✅ Static assets copied"
+          fi
+
+          # Copy public folder
+          if [ -d "public" ]; then
+            cp -r public deploy/
+            echo "✅ Public folder copied"
+          fi
+
+          # Copy custom server.js (override standalone)
+          if [ -f "server.js" ]; then
+            cp server.js deploy/
+            echo "✅ Custom server.js copied"
+          fi
+
+          # Copy package.json
+          if [ -f "package.json" ]; then
+            cp package.json deploy/
+            echo "✅ Package.json copied"
+          fi
+
+          echo "📋 Deployment package contents:"
+          ls -la deploy/
+
+          echo "📊 Package size:"
+          du -sh deploy/
+
+      - name: 🚀 Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./deploy/
+          server-dir: /public_html/nodejs/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.*
+
+      - name: 📝 Deployment Summary
+        run: |
+          echo "🎉 Deployment completed successfully!"
+          echo "🌐 Site: https://sewainstitutegh.com"
+          echo "📦 Commit: ${{ github.sha }}"
+          echo ""
+          echo "📋 Deployed files:"
+          echo "- ✅ Node.js server (server.js)"
+          echo "- ✅ Next.js build (.next/)"
+          echo "- ✅ Static assets (public/)"
+          echo ""
+          echo "🔧 Next steps on LWS cPanel:"
+          echo "1. Restart Node.js application"
+          echo "2. Check application logs"
+          echo "3. Verify site is running"
