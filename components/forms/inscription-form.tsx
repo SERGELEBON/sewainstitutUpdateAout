@@ -51,9 +51,10 @@ export function InscriptionForm() {
 
       if (result.success) {
         toast({
-          title: '✅ Inscription enregistrée !',
+          title: '✅ Inscription enregistrée avec succès !',
           description:
-            'Votre demande a été envoyée avec succès. Nous vous contacterons rapidement.',
+            'Nous avons bien reçu votre demande d\'inscription et vous contacterons dans les plus brefs délais.',
+          duration: 5000,
         })
 
         reset()
@@ -98,6 +99,7 @@ export function InscriptionForm() {
         title: '⚠️ Envoi automatique indisponible',
         description: `${errorMsg}. Nous avons ouvert votre messagerie pour envoyer la demande manuellement.`,
         variant: 'destructive',
+        duration: 8000,
       })
     }
 

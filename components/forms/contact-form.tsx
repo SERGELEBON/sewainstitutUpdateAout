@@ -40,9 +40,10 @@ export function ContactForm() {
 
       if (result.success) {
         toast({
-          title: '✅ Message envoyé !',
+          title: '✅ Message envoyé avec succès !',
           description:
-            'Votre message a été envoyé avec succès. Nous vous répondrons rapidement.',
+            'Nous avons bien reçu votre message et vous répondrons dans les plus brefs délais.',
+          duration: 5000,
         })
 
         reset()
@@ -56,14 +57,16 @@ export function ContactForm() {
           title: `❌ ${errorTitle}`,
           description: errorDesc,
           variant: 'destructive',
+          duration: 7000,
         })
       }
     } catch (error) {
       console.error('Contact form error:', error)
       toast({
-        title: '❌ Erreur réseau',
+        title: '❌ Erreur de connexion',
         description: 'Impossible de se connecter au serveur. Vérifiez votre connexion internet et réessayez.',
         variant: 'destructive',
+        duration: 7000,
       })
     } finally {
       setIsSubmitting(false)

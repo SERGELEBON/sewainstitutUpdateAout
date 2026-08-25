@@ -10,6 +10,7 @@ import { CookieConsentBanner } from '@/components/cookies/cookie-consent-banner'
 import { CookieOverlay } from '@/components/cookies/cookie-overlay'
 import { VisitorTracker } from '@/components/cookies/visitor-tracker'
 import { ConditionalAnalytics } from '@/components/analytics/conditional-analytics'
+import { Toaster } from '@/components/ui/toaster'
 import { SITE_CONFIG } from '@/lib/constants'
 
 const _geist = Geist({ subsets: ['latin'] })
@@ -224,6 +225,7 @@ export default function RootLayout({
         <ScholarshipPopup />
         <CookieConsentBanner />
         <ConditionalAnalytics />
+        <Toaster />
       </body>
     </html>
   )

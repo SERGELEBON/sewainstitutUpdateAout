@@ -14,6 +14,19 @@ const FROM_EMAIL = 'Sewa Institute <no-reply@sewainstitutegh.com>'
 async function sendViaResend(subject: string, html: string, replyTo?: string) {
   const apiKey = process.env.RESEND_API_KEY
 
+  // Mode DEV: simuler l'envoi si pas de clé API
+  if (!apiKey && process.env.NODE_ENV === 'development') {
+    console.log('\n📧 ===== EMAIL SIMULATION (DEV MODE) =====')
+    console.log('De:', FROM_EMAIL)
+    console.log('À:', SCHOOL_EMAIL)
+    console.log('Reply-To:', replyTo || 'N/A')
+    console.log('Sujet:', subject)
+    console.log('---')
+    console.log(html.replace(/<[^>]*>/g, '').substring(0, 200) + '...')
+    console.log('==========================================\n')
+    return { ok: true }
+  }
+
   if (!apiKey) {
     console.error('RESEND_API_KEY is not configured')
     return {
