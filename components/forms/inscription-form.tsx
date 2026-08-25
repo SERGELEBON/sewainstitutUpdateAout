@@ -40,7 +40,7 @@ export function InscriptionForm() {
     setIsSubmitting(true)
 
     try {
-      // Send to API
+      // Send to API - Resend actually delivers the email server-side
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -50,35 +50,6 @@ export function InscriptionForm() {
       const result = await response.json()
 
       if (result.success) {
-        // Also create mailto link as backup with complete information
-        const subject = encodeURIComponent(
-          `Demande d'inscription - ${data.firstName} ${data.lastName}`
-        )
-        const mailtoBody = encodeURIComponent(
-          `NOUVELLE DEMANDE D'INSCRIPTION\n\n` +
-            `=== INFORMATIONS PERSONNELLES ===\n` +
-            `Prénom: ${data.firstName}\n` +
-            `Nom: ${data.lastName}\n` +
-            `Email: ${data.email}\n` +
-            `Téléphone: ${data.phone}\n` +
-            `Pays d'origine: ${data.country || 'Non spécifié'}\n` +
-            `Date de naissance: ${data.dateOfBirth}\n` +
-            `\n=== INFORMATIONS DE PASSEPORT ===\n` +
-            `Numéro de passeport: ${data.passportNumber}\n` +
-            `Date d'émission: ${data.passportIssueDate}\n` +
-            `Date d'expiration: ${data.passportExpiryDate}\n` +
-            `Lieu d'émission: ${data.passportIssuePlace}\n` +
-            `\n=== INFORMATIONS DE FORMATION ===\n` +
-            `Programme: ${data.program}\n` +
-            `Mode de formation: ${data.location === 'presential' ? 'Présentiel au Ghana' : 'Formation en ligne'}\n` +
-            `Date de début souhaitée: ${data.startDate}\n` +
-            `\n=== MESSAGE ADDITIONNEL ===\n` +
-            `${data.message || 'Aucun message'}\n`
-        )
-
-        // Open mailto as backup
-        window.open(`mailto:${SCHOOL_EMAIL}?subject=${subject}&body=${mailtoBody}`, '_blank')
-
         toast({
           title: 'Inscription enregistrée !',
           description:
@@ -90,9 +61,39 @@ export function InscriptionForm() {
         throw new Error(result.message)
       }
     } catch (error) {
+      // Real fallback only: the automatic send failed, so we open the visitor's
+      // mail client pre-filled with the same information as a last resort.
+      const subject = encodeURIComponent(
+        `Demande d'inscription - ${data.firstName} ${data.lastName}`
+      )
+      const mailtoBody = encodeURIComponent(
+        `NOUVELLE DEMANDE D'INSCRIPTION\n\n` +
+          `=== INFORMATIONS PERSONNELLES ===\n` +
+          `Prénom: ${data.firstName}\n` +
+          `Nom: ${data.lastName}\n` +
+          `Email: ${data.email}\n` +
+          `Téléphone: ${data.phone}\n` +
+          `Pays d'origine: ${data.country || 'Non spécifié'}\n` +
+          `Date de naissance: ${data.dateOfBirth}\n` +
+          `\n=== INFORMATIONS DE PASSEPORT ===\n` +
+          `Numéro de passeport: ${data.passportNumber}\n` +
+          `Date d'émission: ${data.passportIssueDate}\n` +
+          `Date d'expiration: ${data.passportExpiryDate}\n` +
+          `Lieu d'émission: ${data.passportIssuePlace}\n` +
+          `\n=== INFORMATIONS DE FORMATION ===\n` +
+          `Programme: ${data.program}\n` +
+          `Mode de formation: ${data.location === 'presential' ? 'Présentiel au Ghana' : 'Formation en ligne'}\n` +
+          `Date de début souhaitée: ${data.startDate}\n` +
+          `\n=== MESSAGE ADDITIONNEL ===\n` +
+          `${data.message || 'Aucun message'}\n`
+      )
+
+      window.open(`mailto:${SCHOOL_EMAIL}?subject=${subject}&body=${mailtoBody}`, '_blank')
+
       toast({
-        title: 'Erreur',
-        description: 'Une erreur est survenue. Veuillez réessayer ou nous contacter directement.',
+        title: 'Envoi automatique indisponible',
+        description:
+          "Nous avons ouvert votre messagerie pour envoyer la demande manuellement. Vous pouvez aussi réessayer plus tard.",
         variant: 'destructive',
       })
     }
