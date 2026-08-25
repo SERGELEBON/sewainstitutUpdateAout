@@ -11,12 +11,16 @@ import {
 const SCHOOL_EMAIL = process.env.NOTIFICATION_EMAIL || 'sewainstitute.edu@gmail.com'
 const FROM_EMAIL = 'Sewa Institute <no-reply@sewainstitutegh.com>'
 
-async function sendViaResend(subject, html, replyTo) {
+async function sendViaResend(subject: string, html: string, replyTo?: string) {
   const apiKey = process.env.RESEND_API_KEY
 
   if (!apiKey) {
     console.error('RESEND_API_KEY is not configured')
-    return { ok: false, error: 'Service email non configure' }
+    return {
+      ok: false,
+      error: 'Configuration manquante',
+      details: 'La clé API Resend n\'est pas configurée. Veuillez contacter l\'administrateur ou utiliser sewainstitute.edu@gmail.com'
+    }
   }
 
   try {
@@ -38,20 +42,44 @@ async function sendViaResend(subject, html, replyTo) {
     if (!res.ok) {
       const errorBody = await res.text()
       console.error('Resend API error:', res.status, errorBody)
-      return { ok: false, error: "Echec de l'envoi de l'email" }
+
+      let errorMessage = "Échec de l'envoi de l'email"
+      let details = ''
+
+      if (res.status === 401 || res.status === 403) {
+        errorMessage = 'Erreur d\'authentification'
+        details = 'La clé API Resend est invalide. Contactez l\'administrateur.'
+      } else if (res.status === 422) {
+        errorMessage = 'Données invalides'
+        details = 'Le format de l\'email est incorrect. Vérifiez vos informations.'
+      } else if (res.status === 429) {
+        errorMessage = 'Limite atteinte'
+        details = 'Trop d\'emails envoyés. Réessayez dans quelques minutes.'
+      } else if (res.status >= 500) {
+        errorMessage = 'Erreur du service d\'email'
+        details = 'Le service Resend est temporairement indisponible. Réessayez plus tard.'
+      }
+
+      return { ok: false, error: errorMessage, details }
     }
 
     return { ok: true }
   } catch (error) {
     console.error('Error calling Resend API:', error)
-    return { ok: false, error: "Echec de l'envoi de l'email" }
+    return {
+      ok: false,
+      error: 'Erreur de connexion',
+      details: 'Impossible de joindre le service d\'email. Vérifiez votre connexion internet et réessayez.'
+    }
   }
 }
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   try {
+    // Get client IP from headers
     const clientIP = getClientIP(request.headers)
 
+    // Rate limiting
     const rateLimit = getRateLimit(clientIP)
 
     if (!rateLimit.allowed) {
@@ -61,6 +89,7 @@ export async function POST(request) {
       )
     }
 
+    // Parse and validate request body
     const data = await request.json()
     const { type, formData } = data
 
@@ -71,8 +100,10 @@ export async function POST(request) {
       )
     }
 
-    const sanitizedData = sanitizeObject(formData)
+    // Sanitize all input data
+    const sanitizedData = sanitizeObject(formData as Record<string, unknown>)
 
+    // Check for suspicious content
     const allValues = Object.values(sanitizedData).join(' ')
     if (containsSuspiciousContent(String(allValues))) {
       return NextResponse.json(
@@ -81,6 +112,7 @@ export async function POST(request) {
       )
     }
 
+    // Validate based on form type
     let validationResult
     if (type === 'inscription') {
       validationResult = inscriptionSchema.safeParse(sanitizedData)
@@ -115,28 +147,28 @@ export async function POST(request) {
         <h2>Nouvelle demande d'inscription</h2>
         <hr/>
         <h3>Informations personnelles</h3>
-        <p><strong>PrÃ©nom:</strong> ${validatedData.firstName}</p>
+        <p><strong>Prénom:</strong> ${validatedData.firstName}</p>
         <p><strong>Nom:</strong> ${validatedData.lastName}</p>
         <p><strong>Email:</strong> ${validatedData.email}</p>
-        <p><strong>TÃ©lÃ©phone:</strong> ${validatedData.phone}</p>
-        <p><strong>Pays d'origine:</strong> ${validatedData.country || 'Non spÃ©cifiÃ©'}</p>
-        <p><strong>Date de naissance:</strong> ${validatedData.dateOfBirth || 'Non spÃ©cifiÃ©e'}</p>
+        <p><strong>Téléphone:</strong> ${validatedData.phone}</p>
+        <p><strong>Pays d'origine:</strong> ${(validatedData as Record<string, unknown>).country || 'Non spécifié'}</p>
+        <p><strong>Date de naissance:</strong> ${(validatedData as Record<string, unknown>).dateOfBirth || 'Non spécifiée'}</p>
         <hr/>
         <h3>Informations de passeport</h3>
-        <p><strong>NumÃ©ro de passeport:</strong> ${validatedData.passportNumber || 'Non spÃ©cifiÃ©'}</p>
-        <p><strong>Date d'Ã©mission:</strong> ${validatedData.passportIssueDate || 'Non spÃ©cifiÃ©e'}</p>
-        <p><strong>Date d'expiration:</strong> ${validatedData.passportExpiryDate || 'Non spÃ©cifiÃ©e'}</p>
-        <p><strong>Lieu d'Ã©mission:</strong> ${validatedData.passportIssuePlace || 'Non spÃ©cifiÃ©'}</p>
+        <p><strong>Numéro de passeport:</strong> ${(validatedData as Record<string, unknown>).passportNumber || 'Non spécifié'}</p>
+        <p><strong>Date d'émission:</strong> ${(validatedData as Record<string, unknown>).passportIssueDate || 'Non spécifiée'}</p>
+        <p><strong>Date d'expiration:</strong> ${(validatedData as Record<string, unknown>).passportExpiryDate || 'Non spécifiée'}</p>
+        <p><strong>Lieu d'émission:</strong> ${(validatedData as Record<string, unknown>).passportIssuePlace || 'Non spécifié'}</p>
         <hr/>
         <h3>Informations sur la formation</h3>
-        <p><strong>Programme choisi:</strong> ${validatedData.program}</p>
-        <p><strong>Mode de formation:</strong> ${validatedData.location === 'presential' ? 'PrÃ©sentiel au Ghana' : 'Formation en ligne'}</p>
-        <p><strong>Date de dÃ©but souhaitÃ©e:</strong> ${validatedData.startDate}</p>
+        <p><strong>Programme choisi:</strong> ${(validatedData as Record<string, unknown>).program}</p>
+        <p><strong>Mode de formation:</strong> ${(validatedData as Record<string, unknown>).location === 'presential' ? 'Présentiel au Ghana' : 'Formation en ligne'}</p>
+        <p><strong>Date de début souhaitée:</strong> ${(validatedData as Record<string, unknown>).startDate}</p>
         <hr/>
         <h3>Message additionnel</h3>
         <p>${validatedData.message || 'Aucun message'}</p>
         <hr/>
-        <p><em>Email envoyÃ© automatiquement depuis le site web Sewa Institute</em></p>
+        <p><em>Email envoyé automatiquement depuis le site web Sewa Institute</em></p>
         <p><small>IP: ${clientIP} | Date: ${new Date().toISOString()}</small></p>
       `
     } else if (type === 'contact') {
@@ -164,6 +196,7 @@ export async function POST(request) {
         {
           success: false,
           message: sendResult.error || "Une erreur est survenue lors de l'envoi",
+          details: sendResult.details || '',
         },
         { status: 502, headers: securityHeaders }
       )
@@ -172,9 +205,9 @@ export async function POST(request) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Votre demande a ete enregistree. Nous vous contacterons bientot.',
-        emailTo: SCHOOL_EMAIL,
-        subject: subject,
+        message: type === 'inscription'
+          ? 'Votre demande d\'inscription a été enregistrée avec succès'
+          : 'Votre message a été envoyé avec succès',
       },
       { headers: securityHeaders }
     )
@@ -187,6 +220,7 @@ export async function POST(request) {
   }
 }
 
+// Block other HTTP methods
 export async function GET() {
   return NextResponse.json(
     { success: false, message: 'Methode non autorisee' },

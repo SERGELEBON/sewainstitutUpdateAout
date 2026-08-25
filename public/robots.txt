@@ -1,25 +1,33 @@
-# Robots.txt for Sewa Institute Ghana
-# https://www.sewainstitute.edu.gh
+# Politique robots.txt - SEWA Institute
+# https://www.sewainstitutegh.com/robots.txt
 
 User-agent: *
 Allow: /
-
-# Sitemap
-Sitemap: https://www.sewainstitute.edu.gh/sitemap.xml
-
-# Disallow admin/api paths
+Disallow: /admin/
 Disallow: /api/
 Disallow: /_next/
-Disallow: /private/
 
-# Allow important pages
-Allow: /formations
-Allow: /contact
-Allow: /inscription
-Allow: /galerie
-Allow: /hebergement
-Allow: /a-propos
-Allow: /formation-en-ligne
+# Empêcher l'indexation des pages sensibles
+Disallow: /*?*
+Disallow: /*.json$
+Disallow: /*.xml$
 
-# Crawl-delay for polite crawling
-Crawl-delay: 1
+# Sitemap
+Sitemap: https://www.sewainstitutegh.com/sitemap.xml
+
+# Crawl rate (1 page toutes les 2 secondes)
+Crawl-delay: 2
+
+# Bloquer les scrapers agressifs
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+User-agent: DotBot
+User-agent: BLEXBot
+User-agent: DataForSeoBot
+Disallow: /
+
+# Bloquer les scrapers d'images
+User-agent: Bytespider
+User-agent: PetalBot
+Disallow: /

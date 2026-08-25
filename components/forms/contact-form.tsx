@@ -29,7 +29,7 @@ export function ContactForm() {
     setIsSubmitting(true)
 
     try {
-      // Send to API - Resend delivers the email server-side
+      // Send to API
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -40,40 +40,34 @@ export function ContactForm() {
 
       if (result.success) {
         toast({
-          title: 'Message envoyé !',
+          title: '✅ Message envoyé !',
           description:
-            `Votre message a été envoyé à ${SCHOOL_EMAIL}. Nous vous répondrons rapidement.`,
+            'Votre message a été envoyé avec succès. Nous vous répondrons rapidement.',
         })
 
         reset()
       } else {
-        throw new Error(result.message)
+        const errorTitle = result.message || 'Erreur d\'envoi'
+        const errorDesc = result.details
+          ? `${result.details}`
+          : 'Une erreur est survenue lors de l\'envoi. Veuillez réessayer.'
+
+        toast({
+          title: `❌ ${errorTitle}`,
+          description: errorDesc,
+          variant: 'destructive',
+        })
       }
     } catch (error) {
-      // Real fallback only: the automatic send failed, so we open the visitor's
-      // mail client pre-filled with the same information as a last resort.
-      const subject = encodeURIComponent(
-        `Message de contact - ${data.firstName} ${data.lastName}`
-      )
-      const body = encodeURIComponent(
-        `NOUVEAU MESSAGE DE CONTACT\n\n` +
-          `Nom: ${data.firstName} ${data.lastName}\n` +
-          `Email: ${data.email}\n` +
-          `Téléphone: ${data.phone}\n\n` +
-          `Message:\n${data.message}\n`
-      )
-
-      window.open(`mailto:${SCHOOL_EMAIL}?subject=${subject}&body=${body}`, '_blank')
-
+      console.error('Contact form error:', error)
       toast({
-        title: 'Envoi automatique indisponible',
-        description:
-          "Nous avons ouvert votre messagerie pour envoyer le message manuellement. Vous pouvez aussi réessayer plus tard.",
+        title: '❌ Erreur réseau',
+        description: 'Impossible de se connecter au serveur. Vérifiez votre connexion internet et réessayez.',
         variant: 'destructive',
       })
+    } finally {
+      setIsSubmitting(false)
     }
-
-    setIsSubmitting(false)
   }
 
   return (

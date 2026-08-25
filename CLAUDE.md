@@ -117,7 +117,11 @@ Sewa Institute is a Next.js 16+ application for English language training in Gha
 - **Headers**: HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy
 - **API Routes**: No-cache headers on `/api/*` routes
 - **lib/security.ts**: Centralized security utilities
-- **Note**: TypeScript errors ignored in builds - fix this before hardening security
+- **Admin Authentication**: JWT + bcrypt for `/admin/cookie-stats` (password: ZachDg#2026)
+- **Anti-Scraping**: middleware.ts blocks malicious bots, allows legitimate crawlers
+- **Rate Limiting**: 3 attempts/min for login, 30/min for stats API, 100/min for general APIs
+- **Cookie Consent**: GDPR-compliant with overlay blocking page until user responds
+- **Email Service**: Resend API (no EmailJS) - requires `RESEND_API_KEY` environment variable
 
 ### Deployment to LWS (cPanel Node.js Hosting)
 
@@ -156,3 +160,13 @@ Sewa Institute is a Next.js 16+ application for English language training in Gha
 - No test suite configured (`pnpm test` is placeholder)
 - Images unoptimized globally - consider enabling Next.js image optimization selectively
 - Consider migrating from ESLint minimal config to security/a11y ruleset mentioned in docs
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -51,14 +51,16 @@ export function InscriptionForm() {
 
       if (result.success) {
         toast({
-          title: 'Inscription enregistrée !',
+          title: '✅ Inscription enregistrée !',
           description:
-            'Votre demande a été envoyée à sewainstitute.edu@gmail.com. Nous vous contacterons rapidement.',
+            'Votre demande a été envoyée avec succès. Nous vous contacterons rapidement.',
         })
 
         reset()
       } else {
-        throw new Error(result.message)
+        const errorMessage = result.message || 'Erreur inconnue'
+        const errorDetails = result.details || ''
+        throw new Error(`${errorMessage}${errorDetails ? ': ' + errorDetails : ''}`)
       }
     } catch (error) {
       // Real fallback only: the automatic send failed, so we open the visitor's
@@ -90,10 +92,11 @@ export function InscriptionForm() {
 
       window.open(`mailto:${SCHOOL_EMAIL}?subject=${subject}&body=${mailtoBody}`, '_blank')
 
+      const errorMsg = error instanceof Error ? error.message : 'Erreur inconnue'
+
       toast({
-        title: 'Envoi automatique indisponible',
-        description:
-          "Nous avons ouvert votre messagerie pour envoyer la demande manuellement. Vous pouvez aussi réessayer plus tard.",
+        title: '⚠️ Envoi automatique indisponible',
+        description: `${errorMsg}. Nous avons ouvert votre messagerie pour envoyer la demande manuellement.`,
         variant: 'destructive',
       })
     }

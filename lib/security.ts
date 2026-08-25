@@ -59,10 +59,12 @@ export function getClientIP(headers: Headers): string {
 }
 
 // Rate limit checker
-export function getRateLimit(clientIP: string): { allowed: boolean; remaining: number } {
+export function getRateLimit(
+  clientIP: string,
+  maxRequests: number = RATE_LIMIT_CONFIG.max,
+  windowMs: number = RATE_LIMIT_CONFIG.windowMs
+): { allowed: boolean; remaining: number } {
   const now = Date.now()
-  const windowMs = RATE_LIMIT_CONFIG.windowMs
-  const maxRequests = RATE_LIMIT_CONFIG.max
 
   if (!rateLimitStore.has(clientIP)) {
     rateLimitStore.set(clientIP, {

@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.sewainstitute.edu.gh'
+  const baseUrl = 'https://www.sewainstitutegh.com'
   const lastModified = new Date()
 
   return [

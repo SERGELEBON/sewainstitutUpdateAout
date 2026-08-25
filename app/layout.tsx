@@ -1,12 +1,15 @@
 import type React from 'react'
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { WhatsAppButton } from '@/components/shared/whatsapp-button'
 import { ScholarshipPopup } from '@/components/shared/scholarship-popup'
+import { CookieConsentBanner } from '@/components/cookies/cookie-consent-banner'
+import { CookieOverlay } from '@/components/cookies/cookie-overlay'
+import { VisitorTracker } from '@/components/cookies/visitor-tracker'
+import { ConditionalAnalytics } from '@/components/analytics/conditional-analytics'
 import { SITE_CONFIG } from '@/lib/constants'
 
 const _geist = Geist({ subsets: ['latin'] })
@@ -100,11 +103,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/images/logotransp.png', sizes: '32x32', type: 'image/png' },
-      { url: '/images/logotransp.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/images/logotransp.png', sizes: '192x192', type: 'image/png' },
+      { url: '/images/logotransp.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: [{ url: '/images/logotransp.png', sizes: '180x180', type: 'image/png' }],
-    shortcut: '/images/logotransp.png',
+    shortcut: '/favicon.ico',
   },
   manifest: '/manifest.json',
   category: 'education',
@@ -211,12 +215,15 @@ export default function RootLayout({
         />
       </head>
       <body className='font-sans antialiased'>
+        <VisitorTracker />
+        <CookieOverlay />
         <Header />
         <main className='min-h-screen'>{children}</main>
         <Footer />
         <WhatsAppButton />
         <ScholarshipPopup />
-        <Analytics />
+        <CookieConsentBanner />
+        <ConditionalAnalytics />
       </body>
     </html>
   )

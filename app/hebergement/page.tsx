@@ -271,7 +271,7 @@ export default function HebergementPage() {
                   </div>
                   <div>
                     <h3 className='font-semibold text-lg mb-2'>Email</h3>
-                    <p className='text-primary font-medium'>contacts@sewainstitutegh.com</p>
+                    <p className='text-primary font-medium'>sewainstitute.edu@gmail.com</p>
                   </div>
                   <div>
                     <h3 className='font-semibold text-lg mb-2'>Adresse</h3>

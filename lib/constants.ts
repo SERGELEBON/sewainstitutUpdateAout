@@ -2,11 +2,11 @@ export const SITE_CONFIG = {
   name: 'Sewa Institute',
   description: 'The Pan African Institute - Formation en anglais au Ghana',
   tagline: "L'école d'anglais des francophones au Ghana et en ligne",
-  email: 'contacts@sewainstitutegh.com',
+  email: 'sewainstitute.edu@gmail.com',
   phone: '026 181 5407',
   phone2: '055 301 9097',
   whatsapp: '+233 26 181 5407',
-  website: 'https://www.sewainstitute.edu.gh',
+  website: 'https://www.sewainstitutegh.com',
   address: 'Asene, Accra, Ghana',
   socialMedia: {
     facebook: '#',
