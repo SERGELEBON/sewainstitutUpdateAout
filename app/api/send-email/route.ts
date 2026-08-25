@@ -8,14 +8,50 @@ import {
   securityHeaders,
 } from '@/lib/security'
 
-const SCHOOL_EMAIL = 'contacts@sewainstitutegh.com'
+const SCHOOL_EMAIL = process.env.NOTIFICATION_EMAIL || 'contacts@sewainstitutegh.com'
+const FROM_EMAIL = 'Sewa Institute <no-reply@sewainstitutegh.com>'
 
-export async function POST(request: NextRequest) {
+async function sendViaResend(subject, html, replyTo) {
+  const apiKey = process.env.RESEND_API_KEY
+
+  if (!apiKey) {
+    console.error('RESEND_API_KEY is not configured')
+    return { ok: false, error: 'Service email non configure' }
+  }
+
   try {
-    // Get client IP from headers
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: FROM_EMAIL,
+        to: [SCHOOL_EMAIL],
+        subject,
+        html,
+        ...(replyTo ? { reply_to: replyTo } : {}),
+      }),
+    })
+
+    if (!res.ok) {
+      const errorBody = await res.text()
+      console.error('Resend API error:', res.status, errorBody)
+      return { ok: false, error: "Echec de l'envoi de l'email" }
+    }
+
+    return { ok: true }
+  } catch (error) {
+    console.error('Error calling Resend API:', error)
+    return { ok: false, error: "Echec de l'envoi de l'email" }
+  }
+}
+
+export async function POST(request) {
+  try {
     const clientIP = getClientIP(request.headers)
 
-    // Rate limiting
     const rateLimit = getRateLimit(clientIP)
 
     if (!rateLimit.allowed) {
@@ -25,7 +61,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Parse and validate request body
     const data = await request.json()
     const { type, formData } = data
 
@@ -36,10 +71,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Sanitize all input data
-    const sanitizedData = sanitizeObject(formData as Record<string, unknown>)
+    const sanitizedData = sanitizeObject(formData)
 
-    // Check for suspicious content
     const allValues = Object.values(sanitizedData).join(' ')
     if (containsSuspiciousContent(String(allValues))) {
       return NextResponse.json(
@@ -48,7 +81,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate based on form type
     let validationResult
     if (type === 'inscription') {
       validationResult = inscriptionSchema.safeParse(sanitizedData)
@@ -87,19 +119,19 @@ export async function POST(request: NextRequest) {
         <p><strong>Nom:</strong> ${validatedData.lastName}</p>
         <p><strong>Email:</strong> ${validatedData.email}</p>
         <p><strong>Téléphone:</strong> ${validatedData.phone}</p>
-        <p><strong>Pays d'origine:</strong> ${(validatedData as Record<string, unknown>).country || 'Non spécifié'}</p>
-        <p><strong>Date de naissance:</strong> ${(validatedData as Record<string, unknown>).dateOfBirth || 'Non spécifiée'}</p>
+        <p><strong>Pays d'origine:</strong> ${validatedData.country || 'Non spécifié'}</p>
+        <p><strong>Date de naissance:</strong> ${validatedData.dateOfBirth || 'Non spécifiée'}</p>
         <hr/>
         <h3>Informations de passeport</h3>
-        <p><strong>Numéro de passeport:</strong> ${(validatedData as Record<string, unknown>).passportNumber || 'Non spécifié'}</p>
-        <p><strong>Date d'émission:</strong> ${(validatedData as Record<string, unknown>).passportIssueDate || 'Non spécifiée'}</p>
-        <p><strong>Date d'expiration:</strong> ${(validatedData as Record<string, unknown>).passportExpiryDate || 'Non spécifiée'}</p>
-        <p><strong>Lieu d'émission:</strong> ${(validatedData as Record<string, unknown>).passportIssuePlace || 'Non spécifié'}</p>
+        <p><strong>Numéro de passeport:</strong> ${validatedData.passportNumber || 'Non spécifié'}</p>
+        <p><strong>Date d'émission:</strong> ${validatedData.passportIssueDate || 'Non spécifiée'}</p>
+        <p><strong>Date d'expiration:</strong> ${validatedData.passportExpiryDate || 'Non spécifiée'}</p>
+        <p><strong>Lieu d'émission:</strong> ${validatedData.passportIssuePlace || 'Non spécifié'}</p>
         <hr/>
         <h3>Informations sur la formation</h3>
-        <p><strong>Programme choisi:</strong> ${(validatedData as Record<string, unknown>).program}</p>
-        <p><strong>Mode de formation:</strong> ${(validatedData as Record<string, unknown>).location === 'presential' ? 'Présentiel au Ghana' : 'Formation en ligne'}</p>
-        <p><strong>Date de début souhaitée:</strong> ${(validatedData as Record<string, unknown>).startDate}</p>
+        <p><strong>Programme choisi:</strong> ${validatedData.program}</p>
+        <p><strong>Mode de formation:</strong> ${validatedData.location === 'presential' ? 'Présentiel au Ghana' : 'Formation en ligne'}</p>
+        <p><strong>Date de début souhaitée:</strong> ${validatedData.startDate}</p>
         <hr/>
         <h3>Message additionnel</h3>
         <p>${validatedData.message || 'Aucun message'}</p>
@@ -125,7 +157,18 @@ export async function POST(request: NextRequest) {
       `
     }
 
-    // Return success with security headers
+    const sendResult = await sendViaResend(subject, htmlContent, validatedData.email)
+
+    if (!sendResult.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: sendResult.error || "Une erreur est survenue lors de l'envoi",
+        },
+        { status: 502, headers: securityHeaders }
+      )
+    }
+
     return NextResponse.json(
       {
         success: true,
@@ -144,7 +187,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Block other HTTP methods
 export async function GET() {
   return NextResponse.json(
     { success: false, message: 'Methode non autorisee' },
