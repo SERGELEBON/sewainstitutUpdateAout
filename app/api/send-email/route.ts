@@ -8,7 +8,7 @@ import {
   securityHeaders,
 } from '@/lib/security'
 
-const SCHOOL_EMAIL = process.env.NOTIFICATION_EMAIL || 'contacts@sewainstitutegh.com'
+const SCHOOL_EMAIL = process.env.NOTIFICATION_EMAIL || 'sewainstitute.edu@gmail.com'
 const FROM_EMAIL = 'Sewa Institute <no-reply@sewainstitutegh.com>'
 
 async function sendViaResend(subject, html, replyTo) {
@@ -115,28 +115,28 @@ export async function POST(request) {
         <h2>Nouvelle demande d'inscription</h2>
         <hr/>
         <h3>Informations personnelles</h3>
-        <p><strong>Prénom:</strong> ${validatedData.firstName}</p>
+        <p><strong>PrÃ©nom:</strong> ${validatedData.firstName}</p>
         <p><strong>Nom:</strong> ${validatedData.lastName}</p>
         <p><strong>Email:</strong> ${validatedData.email}</p>
-        <p><strong>Téléphone:</strong> ${validatedData.phone}</p>
-        <p><strong>Pays d'origine:</strong> ${validatedData.country || 'Non spécifié'}</p>
-        <p><strong>Date de naissance:</strong> ${validatedData.dateOfBirth || 'Non spécifiée'}</p>
+        <p><strong>TÃ©lÃ©phone:</strong> ${validatedData.phone}</p>
+        <p><strong>Pays d'origine:</strong> ${validatedData.country || 'Non spÃ©cifiÃ©'}</p>
+        <p><strong>Date de naissance:</strong> ${validatedData.dateOfBirth || 'Non spÃ©cifiÃ©e'}</p>
         <hr/>
         <h3>Informations de passeport</h3>
-        <p><strong>Numéro de passeport:</strong> ${validatedData.passportNumber || 'Non spécifié'}</p>
-        <p><strong>Date d'émission:</strong> ${validatedData.passportIssueDate || 'Non spécifiée'}</p>
-        <p><strong>Date d'expiration:</strong> ${validatedData.passportExpiryDate || 'Non spécifiée'}</p>
-        <p><strong>Lieu d'émission:</strong> ${validatedData.passportIssuePlace || 'Non spécifié'}</p>
+        <p><strong>NumÃ©ro de passeport:</strong> ${validatedData.passportNumber || 'Non spÃ©cifiÃ©'}</p>
+        <p><strong>Date d'Ã©mission:</strong> ${validatedData.passportIssueDate || 'Non spÃ©cifiÃ©e'}</p>
+        <p><strong>Date d'expiration:</strong> ${validatedData.passportExpiryDate || 'Non spÃ©cifiÃ©e'}</p>
+        <p><strong>Lieu d'Ã©mission:</strong> ${validatedData.passportIssuePlace || 'Non spÃ©cifiÃ©'}</p>
         <hr/>
         <h3>Informations sur la formation</h3>
         <p><strong>Programme choisi:</strong> ${validatedData.program}</p>
-        <p><strong>Mode de formation:</strong> ${validatedData.location === 'presential' ? 'Présentiel au Ghana' : 'Formation en ligne'}</p>
-        <p><strong>Date de début souhaitée:</strong> ${validatedData.startDate}</p>
+        <p><strong>Mode de formation:</strong> ${validatedData.location === 'presential' ? 'PrÃ©sentiel au Ghana' : 'Formation en ligne'}</p>
+        <p><strong>Date de dÃ©but souhaitÃ©e:</strong> ${validatedData.startDate}</p>
         <hr/>
         <h3>Message additionnel</h3>
         <p>${validatedData.message || 'Aucun message'}</p>
         <hr/>
-        <p><em>Email envoyé automatiquement depuis le site web Sewa Institute</em></p>
+        <p><em>Email envoyÃ© automatiquement depuis le site web Sewa Institute</em></p>
         <p><small>IP: ${clientIP} | Date: ${new Date().toISOString()}</small></p>
       `
     } else if (type === 'contact') {
