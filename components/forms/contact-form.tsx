@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 
-const SCHOOL_EMAIL = 'contacts@sewainstitutegh.com'
+const SCHOOL_EMAIL = 'sewainstitute.edu@gmail.com'
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -29,7 +29,7 @@ export function ContactForm() {
     setIsSubmitting(true)
 
     try {
-      // Send to API
+      // Send to API - Resend delivers the email server-side
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -39,25 +39,10 @@ export function ContactForm() {
       const result = await response.json()
 
       if (result.success) {
-        // Also create mailto link as backup
-        const subject = encodeURIComponent(
-          `Message de contact - ${data.firstName} ${data.lastName}`
-        )
-        const body = encodeURIComponent(
-          `NOUVEAU MESSAGE DE CONTACT\n\n` +
-            `Nom: ${data.firstName} ${data.lastName}\n` +
-            `Email: ${data.email}\n` +
-            `Téléphone: ${data.phone}\n\n` +
-            `Message:\n${data.message}\n`
-        )
-
-        // Open mailto as backup
-        window.open(`mailto:${SCHOOL_EMAIL}?subject=${subject}&body=${body}`, '_blank')
-
         toast({
           title: 'Message envoyé !',
           description:
-            'Votre message a été envoyé à contacts@sewainstitutegh.com. Nous vous répondrons rapidement.',
+            `Votre message a été envoyé à ${SCHOOL_EMAIL}. Nous vous répondrons rapidement.`,
         })
 
         reset()
@@ -65,9 +50,25 @@ export function ContactForm() {
         throw new Error(result.message)
       }
     } catch (error) {
+      // Real fallback only: the automatic send failed, so we open the visitor's
+      // mail client pre-filled with the same information as a last resort.
+      const subject = encodeURIComponent(
+        `Message de contact - ${data.firstName} ${data.lastName}`
+      )
+      const body = encodeURIComponent(
+        `NOUVEAU MESSAGE DE CONTACT\n\n` +
+          `Nom: ${data.firstName} ${data.lastName}\n` +
+          `Email: ${data.email}\n` +
+          `Téléphone: ${data.phone}\n\n` +
+          `Message:\n${data.message}\n`
+      )
+
+      window.open(`mailto:${SCHOOL_EMAIL}?subject=${subject}&body=${body}`, '_blank')
+
       toast({
-        title: 'Erreur',
-        description: 'Une erreur est survenue. Veuillez réessayer ou nous contacter directement.',
+        title: 'Envoi automatique indisponible',
+        description:
+          "Nous avons ouvert votre messagerie pour envoyer le message manuellement. Vous pouvez aussi réessayer plus tard.",
         variant: 'destructive',
       })
     }
@@ -144,7 +145,7 @@ export function ContactForm() {
       </Button>
 
       <p className='text-sm text-muted-foreground text-center'>
-        Votre message sera envoyé à <strong>contacts@sewainstitutegh.com</strong>
+        Votre message sera envoyé à <strong>sewainstitute.edu@gmail.com</strong>
       </p>
     </form>
   )
