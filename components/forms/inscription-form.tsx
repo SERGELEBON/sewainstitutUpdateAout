@@ -19,7 +19,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useToast } from '@/hooks/use-toast'
 import { PROGRAMS } from '@/lib/constants'
 
-const SCHOOL_EMAIL = 'contacts@sewainstitutegh.com'
+const SCHOOL_EMAIL = 'sewainstitute.edu@gmail.com'
 
 export function InscriptionForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -53,7 +53,7 @@ export function InscriptionForm() {
         toast({
           title: 'Inscription enregistrée !',
           description:
-            'Votre demande a été envoyée à contacts@sewainstitutegh.com. Nous vous contacterons rapidement.',
+            'Votre demande a été envoyée à sewainstitute.edu@gmail.com. Nous vous contacterons rapidement.',
         })
 
         reset()
@@ -296,7 +296,7 @@ export function InscriptionForm() {
       </Button>
 
       <p className='text-sm text-muted-foreground text-center'>
-        Votre demande sera envoyée à <strong>contacts@sewainstitutegh.com</strong>
+        Votre demande sera envoyée à <strong>sewainstitute.edu@gmail.com</strong>
       </p>
     </form>
   )
