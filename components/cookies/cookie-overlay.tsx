@@ -49,30 +49,31 @@ export function CookieOverlay() {
         <div
           style={{
             position: 'absolute',
-            top: '50%',
+            top: '20%',
             left: '50%',
-            transform: 'translate(-50%, -50%)',
+            transform: 'translateX(-50%)',
             textAlign: 'center',
             color: 'white',
             fontFamily: 'system-ui, sans-serif',
-            maxWidth: '500px',
-            padding: '0 20px',
+            maxWidth: '90%',
+            padding: '0 16px',
           }}
         >
           <h2 style={{
-            fontSize: '24px',
+            fontSize: 'clamp(18px, 5vw, 24px)',
             fontWeight: '700',
-            marginBottom: '12px',
+            marginBottom: '8px',
             color: '#fff',
+            lineHeight: '1.2',
           }}>
-            Acceptation des cookies requise
+            Acceptation requise
           </h2>
           <p style={{
-            fontSize: '16px',
-            lineHeight: '1.6',
+            fontSize: 'clamp(14px, 3.5vw, 16px)',
+            lineHeight: '1.4',
             color: '#e5e7eb',
           }}>
-            Pour continuer à naviguer sur notre site, veuillez accepter ou refuser les cookies en utilisant la bannière ci-dessous.
+            Utilisez la bannière ci-dessous
           </p>
         </div>
       </div>

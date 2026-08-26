@@ -39,12 +39,13 @@ export function CookieConsentBanner() {
   return (
     <div style={{
       position: 'fixed',
-      bottom: '20px',
+      top: '50%',
       left: '50%',
-      transform: 'translateX(-50%)',
+      transform: 'translate(-50%, -50%)',
       zIndex: 9999,
-      width: '90%',
-      maxWidth: '600px',
+      width: 'calc(100% - 32px)',
+      maxWidth: '500px',
+      padding: '0 16px',
     }}>
       <CookieConsent
         location="none"
@@ -59,54 +60,60 @@ export function CookieConsentBanner() {
           position: 'static',
           background: '#ffffff',
           color: '#111827',
-          border: '2px solid #e5e7eb',
-          borderRadius: '12px',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
-          padding: '20px',
+          border: 'none',
+          borderRadius: '16px',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          padding: 'clamp(20px, 5vw, 28px)',
           margin: 0,
           fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
         }}
         buttonStyle={{
           background: '#1A64B1',
           color: '#ffffff',
-          fontSize: '14px',
-          padding: '10px 24px',
+          fontSize: 'clamp(13px, 3.5vw, 15px)',
+          padding: 'clamp(10px, 2.5vw, 12px) clamp(20px, 5vw, 28px)',
           borderRadius: '8px',
           fontWeight: '600',
           border: 'none',
           cursor: 'pointer',
-          margin: '0 4px',
+          margin: '4px',
+          width: 'auto',
+          minWidth: '100px',
         }}
         declineButtonStyle={{
-          background: '#ffffff',
-          color: '#6b7280',
-          fontSize: '14px',
-          padding: '10px 24px',
+          background: '#f3f4f6',
+          color: '#374151',
+          fontSize: 'clamp(13px, 3.5vw, 15px)',
+          padding: 'clamp(10px, 2.5vw, 12px) clamp(20px, 5vw, 28px)',
           borderRadius: '8px',
           fontWeight: '600',
-          border: '2px solid #e5e7eb',
+          border: 'none',
           cursor: 'pointer',
-          margin: '0 4px',
+          margin: '4px',
+          width: 'auto',
+          minWidth: '100px',
         }}
         buttonWrapperClasses="cookie-buttons"
         expires={365}
       >
-        <div style={{ marginBottom: '16px' }}>
+        <div style={{ marginBottom: 'clamp(16px, 4vw, 20px)' }}>
           <h3 style={{
             fontFamily: 'system-ui, sans-serif',
-            fontSize: '16px',
+            fontSize: 'clamp(18px, 4.5vw, 20px)',
             fontWeight: '700',
             marginBottom: '8px',
             color: '#111827',
+            lineHeight: '1.2',
           }}>
-            Gestion des cookies
+            🍪 Gestion des cookies
           </h3>
           <p style={{
             fontFamily: 'system-ui, sans-serif',
-            fontSize: '14px',
+            fontSize: 'clamp(13px, 3.5vw, 14px)',
             lineHeight: '1.5',
-            color: '#4b5563',
+            color: '#6b7280',
             margin: 0,
+            wordWrap: 'break-word',
           }}>
             Nous utilisons des cookies pour améliorer votre expérience.{' '}
             <Link
