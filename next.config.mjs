@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Pour dÃ©ploiement statique (hÃ©bergement mutualisÃ©)
+  // Pour déploiement statique (hébergement mutualisé)
   // output: 'export',
   // distDir: 'out',
   // trailingSlash: true,
 
-  // Pour dÃ©ploiement serveur Node.js (VPS)
+  // Pour déploiement serveur Node.js (VPS)
   // output: 'standalone', // Desactive: cause une erreur de build sur Vercel (ENOENT next-server.js.nft.json)
   typescript: {
     ignoreBuildErrors: false,
