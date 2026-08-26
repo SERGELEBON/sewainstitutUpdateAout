@@ -87,6 +87,7 @@ export function InscriptionForm() {
           `Programme: ${data.program}\n` +
           `Mode de formation: ${data.location === 'presential' ? 'Présentiel au Ghana' : 'Formation en ligne'}\n` +
           `Date de début souhaitée: ${data.startDate}\n` +
+          `Durée de formation: ${data.duration}\n` +
           `\n=== MESSAGE ADDITIONNEL ===\n` +
           `${data.message || 'Aucun message'}\n`
       )
@@ -275,15 +276,37 @@ export function InscriptionForm() {
         {errors.location && <p className='text-sm text-destructive'>{errors.location.message}</p>}
       </div>
 
-      <div className='space-y-2'>
-        <Label htmlFor='startDate'>Date de début souhaitée *</Label>
-        <Input
-          id='startDate'
-          type='date'
-          {...register('startDate')}
-          aria-invalid={!!errors.startDate}
-        />
-        {errors.startDate && <p className='text-sm text-destructive'>{errors.startDate.message}</p>}
+      <div className='grid grid-cols-1 gap-6 sm:grid-cols-2'>
+        <div className='space-y-2'>
+          <Label htmlFor='startDate'>Date de début souhaitée *</Label>
+          <Input
+            id='startDate'
+            type='date'
+            {...register('startDate')}
+            aria-invalid={!!errors.startDate}
+          />
+          {errors.startDate && <p className='text-sm text-destructive'>{errors.startDate.message}</p>}
+        </div>
+
+        <div className='space-y-2'>
+          <Label htmlFor='duration'>Durée de formation *</Label>
+          <Select onValueChange={(value) => setValue('duration', value)}>
+            <SelectTrigger id='duration' aria-invalid={!!errors.duration}>
+              <SelectValue placeholder='Sélectionnez la durée' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='1 mois'>1 mois</SelectItem>
+              <SelectItem value='2 mois'>2 mois</SelectItem>
+              <SelectItem value='3 mois'>3 mois</SelectItem>
+              <SelectItem value='4 mois'>4 mois</SelectItem>
+              <SelectItem value='6 mois'>6 mois</SelectItem>
+              <SelectItem value='9 mois'>9 mois</SelectItem>
+              <SelectItem value='12 mois'>12 mois</SelectItem>
+              <SelectItem value='Autre'>Autre (à préciser dans le message)</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.duration && <p className='text-sm text-destructive'>{errors.duration.message}</p>}
+        </div>
       </div>
 
       <div className='space-y-2'>

@@ -81,6 +81,11 @@ export const inscriptionSchema = z.object({
     .min(1, 'Veuillez selectionner une date de debut')
     .max(50, 'Date invalide')
     .refine(val => noScriptRegex.test(val), 'Contenu non autorise detecte'),
+  duration: z
+    .string()
+    .min(1, 'Veuillez selectionner une duree de formation')
+    .max(50, 'Duree invalide')
+    .refine(val => noScriptRegex.test(val), 'Contenu non autorise detecte'),
   message: secureString(0, 2000).optional(),
 })
 

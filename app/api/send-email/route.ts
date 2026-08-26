@@ -177,6 +177,7 @@ export async function POST(request: NextRequest) {
         <p><strong>Programme choisi:</strong> ${(validatedData as Record<string, unknown>).program}</p>
         <p><strong>Mode de formation:</strong> ${(validatedData as Record<string, unknown>).location === 'presential' ? 'Présentiel au Ghana' : 'Formation en ligne'}</p>
         <p><strong>Date de début souhaitée:</strong> ${(validatedData as Record<string, unknown>).startDate}</p>
+        <p><strong>Durée de formation:</strong> ${(validatedData as Record<string, unknown>).duration}</p>
         <hr/>
         <h3>Message additionnel</h3>
         <p>${validatedData.message || 'Aucun message'}</p>
